@@ -1,0 +1,102 @@
+@font-face {
+  font-family: 'SukhumvitTadmai';
+  src: url('../src/assets/fonts/SukhumvitTadmai-UltraLight.otf') format('opentype');
+  font-weight: 200;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'SukhumvitTadmai';
+  src: url('../src/assets/fonts/SukhumvitTadmai-Text.otf') format('opentype');
+   font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'SukhumvitTadmai';
+  src: url('../src/assets/fonts/SukhumvitTadmai-SemiBold.otf') format('opentype');
+  font-weight: 600;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'SukhumvitTadmai';
+  src: url('../src/assets/fonts/SukhumvitTadmai-ExtraBold.otf') format('opentype');
+  font-weight: 800;
+  font-style: normal;
+}
+–
+html,
+body,
+#root,
+.app {
+  height: 100%;
+  width: 100%;
+ font-family: 'SukhumvitTadmai';
+}
+.App-logo {
+  height: 45px;
+  weight: 45px;
+  padding-left: 2.5px;
+  padding-right: 2.5px;
+}
+.App-logologin {
+  height: 200px;
+  weight: 200px;
+  padding-left: 2.5px;
+  padding-right: 2.5px;
+}
+.Nosearch {
+  height: 200px;
+  weight: 200px;
+  padding-left: 2.5px;
+  padding-right: 2.5px;
+}
+
+.Header-logo {
+  height: 100px;
+  weight: 100px;
+  padding-left: 2.5px;
+  padding-right: 2.5px;
+}
+
+.lg-backdrop,
+.lg-outer {
+  position: fixed !important;
+  z-index: 99999 !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* ปิด scroll background ตอนเปิด LightGallery */
+body.lg-on {
+  overflow: hidden !important;
+}
+
+@media print {
+  body {
+    -webkit-print-color-adjust: exact !important; /* ให้สีตรงตามจอ */
+    print-color-adjust: exact !important;
+    margin: 0;
+    padding: 0;
+    zoom: 90%; /* ปรับสเกลให้พอดีกับกระดาษ */
+  }
+
+  @page {
+    size: A4 portrait; /* แนวตั้ง / ถ้าต้องการแนวนอนใช้ landscape */
+    margin: 10mm; /* ขอบกระดาษ */
+  }
+
+  /* ปรับ Box ที่ใช้พิมพ์ให้ไม่หลุดขอบ */
+  .print-area {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* ซ่อนปุ่ม Print */
+  .no-print {
+    display: none !important;
+  }
+}
