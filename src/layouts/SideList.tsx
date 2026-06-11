@@ -10,6 +10,7 @@ import logodark from '../assets/Image/logo_SAK_225.png';
 import logomoblie from '../assets/Image//logo_sak-02.png';
 import logodarkmoblie from '../assets/Image/logo_sak-01.png';
 import ButtonMenu from '../components/ButtonMenu';
+import ApprovalNotifyBadge from '../components/Approval/ApprovalNotifyBadge';
 
 // icon
 import FolderSharedIcon from '@mui/icons-material/FolderShared';
@@ -19,6 +20,9 @@ import BuildCircleIcon from '@mui/icons-material/BuildCircle';
 import HomeWorkIcon from '@mui/icons-material/HomeWork';
 import AudioFileIcon from '@mui/icons-material/AudioFile';
 import HelpIcon from '@mui/icons-material/Help';
+import NewspaperIcon from '@mui/icons-material/Newspaper';
+import PolicyIcon from '@mui/icons-material/Policy';
+import GroupsIcon from '@mui/icons-material/Groups';
 
 import { useLocation } from 'react-router-dom';
 import { useState } from 'react';
@@ -31,6 +35,7 @@ interface SideListProps {
 }
 
 const drawerWidth = 260;
+
 const openedMixin = (theme: Theme): CSSObject => ({
     width: drawerWidth,
     transition: theme.transitions.create('width', {
@@ -77,13 +82,14 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
         flexShrink: 0,
         whiteSpace: 'nowrap',
         boxSizing: 'border-box',
-        // height: '100vh',
-        backdropFilter: 'blur(10px)',
+        minHeight: '100vh',
         '& .MuiDrawer-paper': {
-            // height: '100vh',
+            position: 'relative',
+            minHeight: '100vh',
             width: drawerWidth,
             display: 'flex',
             flexDirection: 'column',
+            overflow: 'visible',
             boxShadow: "none",     // เอา shadow ออก
             borderRight: "none",
             border: "none",
@@ -93,6 +99,9 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
             ...openedMixin(theme),
             '& .MuiDrawer-paper': {
                 ...openedMixin(theme),
+                position: 'relative',
+                minHeight: '100vh',
+                overflow: 'visible',
                 backgroundSize: 'cover',
                 backgroundColor: theme.palette.primary.lighter,
                 backgroundRepeat: 'no-repeat',
@@ -107,6 +116,9 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
             ...closedMixin(theme),
             '& .MuiDrawer-paper': {
                 ...closedMixin(theme),
+                position: 'relative',
+                minHeight: '100vh',
+                overflow: 'visible',
                 backgroundColor: theme.palette.primary.lighter,
                 backgroundSize: 'cover',
                 backgroundRepeat: 'no-repeat',
@@ -126,13 +138,17 @@ function SideList({ open, setOpen }: SideListProps) {
     const theme = useTheme();
     const location = useLocation();
     const { can } = usePermission();
-
     const [openSettings, setOpenSettings] = useState(true);
-    const [openFaq, setOpenFaq] = useState(false);
+    const [openAbout, setOpenAbout] = useState(true);
+    const [openFaq, setOpenFaq] = useState(true);
+    const [openNews, setOpenNews] = useState(true);
     const [selectedLink, setSelectedLink] = useState(location.pathname);
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
     const [openClick] = useState(true);
-    const isSelected = location.pathname.startsWith('/Settings');
+    const isAboutSelected = location.pathname.startsWith('/About');
+    const isFaqSelected = location.pathname.startsWith('/Faq_');
+    const isNewsSelected = location.pathname.startsWith('/News_');
+    const isSettingsSelected = location.pathname.startsWith('/Settings');
 
     const menuSettings = [
         { label: 'ธีมเว็บไซต์', path: '/Settings_Theme', show: can("SettingsTheme") },
@@ -140,16 +156,56 @@ function SideList({ open, setOpen }: SideListProps) {
         { label: 'ข้อมูลการติดต่อ', path: '/Settings_Contact', show: can("Contact") },
     ]
 
+    const menuAbout = [
+        { label: 'พันธกิจ', path: '/About/Mission', show: true },
+        { label: 'คณะกรรมการ', path: '/About/Company_Director', show: true },
+    ];
+
+    const menuVideo = [
+        {
+            label: 'วิดีโอ',
+            path: '/Vedio',
+            badge: <ApprovalNotifyBadge module="vedio" />,
+            showBadge: true,
+            show: can("Vedio"),
+        },
+    ];
+
     const menuFaq = [
         {
             label: 'ประเภทคำถามที่พบบ่อย',
-            path: '/faq/type',
-            show: true,
+            path: '/Faq_Type',
+            show: can("FAQ") || can("FaqType"),
         },
         {
             label: 'คำถามที่พบบ่อย',
-            path: '/faq/question',
-            show: true,
+            path: '/Faq_Question',
+            show: can("FAQ") || can("FaqQuestion"),
+        },
+    ];
+
+    const menuNews = [
+        {
+            label: 'ประเภทข่าวและกิจกรรม',
+            path: '/News_Type',
+            show: can("News") || can("New") || can("NewsType"),
+        },
+        {
+            label: 'ข่าวและกิจกรรม',
+            path: '/News_Activity',
+            badge: <ApprovalNotifyBadge module="news" />,
+            showBadge: true,
+            show: can("News") || can("New"),
+        },
+    ];
+
+    const menuPolicy = [
+        {
+            label: 'นโยบาย',
+            path: '/Policy',
+            badge: <ApprovalNotifyBadge module="policy" />,
+            showBadge: true,
+            show: can("Policy") || can("Policies"),
         },
     ];
 
@@ -171,10 +227,14 @@ function SideList({ open, setOpen }: SideListProps) {
             {/* กล่องสีขาว */}
             <Box
                 sx={{
-                    position: "relative",
-                    zIndex: 1,
-                    mt: 3,
-                    ml: 2,
+                    position: "fixed",
+                    top: theme.spacing(3),
+                    zIndex: theme.zIndex.drawer + 1,
+                    left: theme.spacing(2),
+                    width: open
+                        ? `calc(${drawerWidth}px - ${theme.spacing(4)})`
+                        : `calc(${theme.spacing(10)} + 1px - ${theme.spacing(2)})`,
+                    maxHeight: `calc(100vh - ${theme.spacing(6)})`,
                     borderRadius: 2,
                     backgroundColor:
                         theme.palette.mode === "dark"
@@ -209,7 +269,40 @@ function SideList({ open, setOpen }: SideListProps) {
                 <Box
                     sx={{
                         overflowY: "auto",
-                        maxHeight: "calc(100vh - 200px)"
+                        maxHeight: "calc(100vh - 200px)",
+                        pr: 0.5,
+                        scrollbarWidth: "thin",
+                        scrollbarColor: "transparent transparent",
+                        overscrollBehavior: "contain",
+                        "&:hover": {
+                            scrollbarColor: "rgba(96, 96, 96, 0.75) transparent",
+                        },
+                        "&::-webkit-scrollbar": {
+                            width: 8,
+                        },
+                        "&::-webkit-scrollbar-track": {
+                            backgroundColor: "transparent",
+                        },
+                        "&::-webkit-scrollbar-thumb": {
+                            backgroundColor: "transparent",
+                            borderRadius: 999,
+                            border: "2px solid transparent",
+                            backgroundClip: "padding-box",
+                        },
+                        "&:hover::-webkit-scrollbar-thumb": {
+                            backgroundColor: "rgba(96, 96, 96, 0.55)",
+                        },
+                        "&::-webkit-scrollbar-thumb:hover": {
+                            backgroundColor: "rgba(96, 96, 96, 0.8)",
+                        },
+                        "&::-webkit-scrollbar-button": {
+                            display: "none",
+                            width: 0,
+                            height: 0,
+                        },
+                        "&::-webkit-scrollbar-corner": {
+                            backgroundColor: "transparent",
+                        },
                     }}
                 >
                     <List>
@@ -261,19 +354,38 @@ function SideList({ open, setOpen }: SideListProps) {
                                 namemain='สาขา'
                             />
                         }
-                        {(can("Vedio")) &&
+                        {menuVideo.some((item) => item.show) &&
                             <ButtonMenu
                                 open={open}
                                 setOpen={setOpen}
                                 selectedLink={selectedLink}
                                 setSelectedLink={setSelectedLink}
                                 isMobile={isMobile}
-                                selectedsetLink='/Vedio'
+                                selectedsetLink={menuVideo[0].path}
                                 iconmain={<AudioFileIcon />}
-                                namemain='วิดีโอ'
+                                namemain={menuVideo[0].label}
+                                badge={menuVideo[0].badge}
+                                showBadge={menuVideo[0].showBadge}
                             />
                         }
-                        {can("FAQ") && (
+                        {menuAbout.some((item) => item.show) && (
+                            <ListButtonMenu
+                                open={open}
+                                setOpen={setOpen}
+                                openMenu={openAbout}
+                                setOpenMenu={setOpenAbout}
+                                selectedLink={selectedLink}
+                                setSelectedLink={setSelectedLink}
+                                isMobile={isMobile}
+                                isSelected={isAboutSelected}
+                                openClick={openClick}
+                                iconmain={<GroupsIcon />}
+                                namemain='เกี่ยวกับเรา'
+                                submenu={menuAbout}
+                            />
+                        )}
+
+                        {menuFaq.some((item) => item.show) && (
                             <ListButtonMenu
                                 open={open}
                                 setOpen={setOpen}
@@ -282,14 +394,47 @@ function SideList({ open, setOpen }: SideListProps) {
                                 selectedLink={selectedLink}
                                 setSelectedLink={setSelectedLink}
                                 isMobile={isMobile}
-                                isSelected={location.pathname.startsWith('/faq')}
+                                isSelected={isFaqSelected}
                                 openClick={openClick}
                                 iconmain={<HelpIcon />}
                                 namemain='คำถามที่พบบ่อย'
                                 submenu={menuFaq}
                             />
                         )}
-                        {(can("Contact") || can("Question") || can("Contact")) &&
+
+                        {menuNews.some((item) => item.show) && (
+                            <ListButtonMenu
+                                open={open}
+                                setOpen={setOpen}
+                                openMenu={openNews}
+                                setOpenMenu={setOpenNews}
+                                selectedLink={selectedLink}
+                                setSelectedLink={setSelectedLink}
+                                isMobile={isMobile}
+                                isSelected={isNewsSelected}
+                                openClick={openClick}
+                                iconmain={<NewspaperIcon />}
+                                namemain='ข่าวและกิจกรรม'
+                                submenu={menuNews}
+                            />
+                        )}
+
+                        {menuPolicy.some((item) => item.show) && (
+                            <ButtonMenu
+                                open={open}
+                                setOpen={setOpen}
+                                selectedLink={selectedLink}
+                                selectedsetLink={menuPolicy[0].path}
+                                setSelectedLink={setSelectedLink}
+                                isMobile={isMobile}
+                                iconmain={<PolicyIcon />}
+                                namemain={menuPolicy[0].label}
+                                badge={menuPolicy[0].badge}
+                                showBadge={menuPolicy[0].showBadge}
+                            />
+                        )}
+
+                        {menuSettings.some((item) => item.show) &&
                             <ListButtonMenu
                                 open={open}
                                 setOpen={setOpen}
@@ -298,7 +443,7 @@ function SideList({ open, setOpen }: SideListProps) {
                                 selectedLink={selectedLink}
                                 setSelectedLink={setSelectedLink}
                                 isMobile={isMobile}
-                                isSelected={isSelected}
+                                isSelected={isSettingsSelected}
                                 openClick={openClick}
                                 iconmain={<BuildCircleIcon />}
                                 namemain='ตั้งค่า'

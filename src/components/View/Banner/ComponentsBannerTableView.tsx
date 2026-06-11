@@ -6,8 +6,8 @@ import StyledTableCell from '../../Model/Table/StyledTableCell'
 import NoImage from '../../../assets/Image/dastano.png'
 import Loading from '../../../assets/Image/Loading.gif'
 import ComponentsDateTable from '../../Model/Table/ComponentsDateTable'
-import SwitchButton from '../../Model/Buttom/SwitchButton'
-import AppIconButton from '../../Model/Buttom/IconButton'
+import SwitchButton from '../../Buttom/SwitchButton'
+import AppIconButton from '../../Buttom/IconButton'
 import { HiPencil } from 'react-icons/hi'
 import { AiFillDelete } from 'react-icons/ai'
 import { useNavigate } from 'react-router-dom'
@@ -23,19 +23,7 @@ export interface ComponentsBannerTableViewProps {
     setRowsPerPage: React.Dispatch<React.SetStateAction<number>>
     handleDeleteChange: (id: number) => Promise<void>
     handleStatusChange: (TopicID: number, newChecked: boolean) => Promise<void>
-    setEditForm: React.Dispatch<React.SetStateAction<boolean>>
-    fetchshowBrander: () => Promise<void>
-    setNotify: React.Dispatch<React.SetStateAction<{
-        isOpen: boolean;
-        message: string;
-        type: "success" | "error" | "warning" | "info";
-    }>>;
-    currentUserId: number
-    fullnamePer: string
-    IDPer: string
-    typeUser: string
     can: (slug: string) => boolean
-    setEditTopicId: React.Dispatch<React.SetStateAction<number | null>>
 }
 
 const ComponentsBannerTableView: React.FC<ComponentsBannerTableViewProps> = ({
@@ -45,20 +33,12 @@ const ComponentsBannerTableView: React.FC<ComponentsBannerTableViewProps> = ({
     rowsPerPage,
     setPage,
     setRowsPerPage,
-    setNotify,
     handleDeleteChange,
     handleStatusChange,
-    fetchshowBrander,
-    setEditForm,
-    currentUserId,
-    fullnamePer,
-    typeUser,
-    IDPer,
-    setEditTopicId,
     can
 }) => {
     const theme = useTheme();
-     const navigate = useNavigate();
+    const navigate = useNavigate();
     const columns: Column[] = [
         { id: 1, label: 'ลำดับ', width: '5%', align: 'center' },
         { id: 2, label: 'ชื่อเรื่องแบนเนอร์', width: '30%', align: 'left' },
@@ -85,7 +65,7 @@ const ComponentsBannerTableView: React.FC<ComponentsBannerTableViewProps> = ({
         setRowsPerPage(newRowsPerPage);
         setPage(0);
     };
-  const handleEditItemClick = (personelID: number) => {
+    const handleEditItemClick = (personelID: number) => {
         navigate(`/Banner/edit/${personelID}`);
     };
 
@@ -166,21 +146,21 @@ const ComponentsBannerTableView: React.FC<ComponentsBannerTableViewProps> = ({
                                     <Box
                                         component="img"
                                         loading="lazy"
-                                        maxWidth={30}
-                                        maxHeight={60}
                                         alt={item.name}
                                         src={`${BASE_URL_API}/${item.picturePC}`}
                                         sx={{
                                             marginRight: 2,
                                             filter: item.active === "0" ? 'grayscale(100%) brightness(70%) opacity(0.5)' : 'none',
+                                            maxWidth: 30,
+                                            maxHeight: 60
                                         }}
                                     />
 
                                     <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', mb: 0.5 }}>
                                         <Typography variant='body2'
-                                            fontWeight={400}
                                             sx={{
                                                 color: item.active === "0" ? 'rgba(0, 0, 0, 0.5)' : 'text.primary',
+                                                fontWeight: 400
                                             }}
                                         >   {item.name} </Typography>
                                     </Box>
@@ -194,10 +174,13 @@ const ComponentsBannerTableView: React.FC<ComponentsBannerTableViewProps> = ({
                                 />
                             </StyledTableCell>
                             {can("Staut Brander") && (
-                                <StyledTableCell align="center" >
+                                <StyledTableCell align="center">
                                     <SwitchButton
+                                        disabled={item.type !== 'หน้าหลัก'} // 🔥 บล็อกถ้าไม่ใช่หน้าหลัก
                                         checked={item.active !== "0"}
-                                        handleChange={(event) => handleStatusChange(item.id, event.target.checked)}
+                                        handleChange={(event) =>
+                                            handleStatusChange(item.id, event.target.checked)
+                                        }
                                     />
                                 </StyledTableCell>
                             )}
@@ -236,9 +219,10 @@ const ComponentsBannerTableView: React.FC<ComponentsBannerTableViewProps> = ({
                                                     variant="filled"
                                                     customColor={theme.palette.error.dark}
                                                     onClick={() => handleDeleteChange(item.id)}
+                                                    disabled={item.type !== 'หน้าหลัก'} // 🔥 บล็อกถ้าไม่ใช่หน้าหลัก
                                                     sx={{
-                                                        opacity: 1,
-                                                        cursor: 'pointer',
+                                                        opacity: item.type !== 'หน้าหลัก' ? 0.4 : 1,
+                                                        cursor: item.type !== 'หน้าหลัก' ? 'not-allowed' : 'pointer',
                                                     }}
                                                 >
                                                     <AiFillDelete
@@ -251,7 +235,30 @@ const ComponentsBannerTableView: React.FC<ComponentsBannerTableViewProps> = ({
                                             )}
                                         </>
                                     ) : (
-                                        <Typography fontWeight={400}>-</Typography>
+                                        item.type === 'หน้าหลัก' ? (
+                                            <Typography sx={{ fontWeight: 400 }}>-</Typography>
+                                        ) : (
+                                            can("Edit Brander") && (
+                                                <AppIconButton
+                                                    title="แก้ไขแบนเนอร์"
+                                                    variant="filled"
+                                                    customColor="#FFAA37"
+                                                    onClick={() => handleEditItemClick(item.id)}
+                                                    sx={{
+                                                        opacity: 1,
+                                                        cursor: 'pointer',
+                                                        mr: 1
+                                                    }}
+                                                >
+                                                    <HiPencil
+                                                        style={{
+                                                            fontSize: theme.typography.h6.fontSize,
+                                                            color: "#fff",
+                                                        }}
+                                                    />
+                                                </AppIconButton>
+                                            )
+                                        )
                                     )}
 
                                 </StyledTableCell>
@@ -260,7 +267,7 @@ const ComponentsBannerTableView: React.FC<ComponentsBannerTableViewProps> = ({
                     ))
                 )}
             </ComponentTableModel>
-             <TablePagination
+            <TablePagination
                 component="div"
                 count={brandData.bannerscount}
                 page={page}

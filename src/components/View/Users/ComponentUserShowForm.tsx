@@ -5,7 +5,7 @@ import { apiFetch } from '../../../API/client'
 import NoImage from '../../../assets/Image/avatar-2.png'
 import formatDate from '../../../utils/Format/format-date'
 import ConfirmDialog from '../../Model/Pop_up/ConfirmDialog'
-import SwitchButton from '../../Model/Buttom/SwitchButton'
+import SwitchButton from '../../Buttom/SwitchButton'
 
 interface ComponentUserShowFormProps {
     personelID: number | null

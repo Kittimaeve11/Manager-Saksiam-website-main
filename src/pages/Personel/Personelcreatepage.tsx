@@ -9,7 +9,7 @@ import { validateUserForm } from '../../utils/validation';
 import BasicTextField from '../../components/Model/TextField/BasicTextField';
 import BasicDatePicker from '../../components/Model/TextField/BasicDatePicker';
 import BasicDropDownselete from '../../components/Model/Dropdown/BasicDropDownselete';
-import TextButton from '../../components/Model/Buttom/TextButton';
+import TextButton from '../../components/Buttom/TextButton';
 import ConfirmDialog from '../../components/Model/Pop_up/ConfirmDialog';
 import Notifications from '../../components/Model/Pop_up/Notifications';
 import MenuAddressNumber from '../../components/Model/Dropdown/MenuAddressNumber';

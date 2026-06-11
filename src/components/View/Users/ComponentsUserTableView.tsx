@@ -7,8 +7,8 @@ import NoImage from '../../../assets/Image/dastano.png'
 import Loading from '../../../assets/Image/Loading.gif'
 import StyledTableCell from '../../Model/Table/StyledTableCell';
 import ComponentsDateTable from '../../Model/Table/ComponentsDateTable';
-import ChipButton from '../../Model/Buttom/ChipButton';
-import AppIconButton from '../../Model/Buttom/IconButton';
+import ChipButton from '../../Buttom/ChipButton';
+import AppIconButton from '../../Buttom/IconButton';
 import { HiPencil } from 'react-icons/hi';
 import { GrPowerReset } from 'react-icons/gr';
 import { useNavigate } from 'react-router-dom';

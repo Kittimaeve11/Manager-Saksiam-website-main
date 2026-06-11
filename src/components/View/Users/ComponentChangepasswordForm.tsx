@@ -6,7 +6,7 @@ import { validataChangePasswordForm } from '../../../utils/validation';
 import Notifications from '../../Model/Pop_up/Notifications';
 import ConfirmDialog from '../../Model/Pop_up/ConfirmDialog';
 import BasicTextField from '../../Model/TextField/BasicTextField';
-import TextButton from '../../Model/Buttom/TextButton';
+import TextButton from '../../Buttom/TextButton';
 
 interface ComponentChangeFormProps {
     onClose: () => void;

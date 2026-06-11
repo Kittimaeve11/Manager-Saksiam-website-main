@@ -7,7 +7,7 @@ import { validataRoleForm } from '../../utils/validation';
 import { apiFetch } from '../../API/client';
 import Notifications from '../../components/Model/Pop_up/Notifications';
 import ConfirmDialog from '../../components/Model/Pop_up/ConfirmDialog';
-import TextButton from '../../components/Model/Buttom/TextButton';
+import TextButton from '../../components/Buttom/TextButton';
 import BasicTextField from '../../components/Model/TextField/BasicTextField';
 
 interface PermissionItem {

@@ -15,6 +15,7 @@ interface ListButtonMenuProps {
     openClick: boolean
     iconmain: React.ReactNode;
     namemain: string
+    mainPath?: string;
     submenu: {
         label: string;
         path: string;
@@ -36,6 +37,7 @@ const ListButtonMenu: React.FC<ListButtonMenuProps> = ({
     openClick,
     iconmain,
     namemain,
+    mainPath,
     submenu
 }) => {
     const theme = useTheme();
@@ -64,6 +66,11 @@ const ListButtonMenu: React.FC<ListButtonMenuProps> = ({
                     },
                 }}
                 onClick={() => {
+                    if (mainPath) {
+                        setSelectedLink(mainPath);
+                        navigate(mainPath);
+                        if (isMobile) setOpen(false);
+                    }
                     setOpenMenu(!openMenu)
                 }}
                 selected={openClick && isSelected}
@@ -73,7 +80,7 @@ const ListButtonMenu: React.FC<ListButtonMenuProps> = ({
                     mr: open ? 2 : 0,
                     justifyContent: 'center',
                     fontSize: theme.typography.h4.fontSize,
-                    color: theme.palette.mode === 'dark' ? (isSelected ? theme.palette.primary.main : theme.palette.grey[600]) : (isSelected ? theme.palette.primary.dark : '')
+                    color: theme.palette.mode === 'dark' ? theme.palette.common.white : (isSelected ? theme.palette.primary.dark : '')
                 }}>
 
                     {iconmain}
@@ -83,7 +90,7 @@ const ListButtonMenu: React.FC<ListButtonMenuProps> = ({
                         <Typography
                             sx={{
                                 fontSize: open ? theme.typography.body2.fontSize : 8,
-                                color: theme.palette.mode === 'dark' ? (isSelected ? theme.palette.primary.main : theme.palette.grey[500]) : (isSelected ? theme.palette.primary.dark : ''),
+                                color: theme.palette.mode === 'dark' ? theme.palette.common.white : (isSelected ? theme.palette.primary.dark : ''),
                                 fontWeight: 600,
                             }}
                         >
@@ -101,7 +108,7 @@ const ListButtonMenu: React.FC<ListButtonMenuProps> = ({
                             {
                                 mr: -1,
                                 color: theme.palette.mode === 'dark'
-                                    ? isSelected ? theme.palette.primary.main : theme.palette.grey[500]
+                                    ? theme.palette.common.white
                                     : isSelected ? theme.palette.primary.dark : '',
                                 transition: '0.2s',
                             },
@@ -117,6 +124,8 @@ const ListButtonMenu: React.FC<ListButtonMenuProps> = ({
                     .filter(item => item.show)
                     .map((item, index, arr) => {
                         const isLast = index === arr.length - 1;
+                        const isSubmenuSelected =
+                            selectedLink === item.path || selectedLink.startsWith(`${item.path}/`);
 
                         return (
                             <ListItemButton
@@ -170,7 +179,7 @@ const ListButtonMenu: React.FC<ListButtonMenuProps> = ({
                                     navigate(item.path);
                                     if (isMobile) setOpen(false);
                                 }}
-                                selected={selectedLink === item.path}
+                                selected={isSubmenuSelected}
                             >
                                 <Box
                                     className="submenu-selected-bg"
@@ -181,7 +190,7 @@ const ListButtonMenu: React.FC<ListButtonMenuProps> = ({
                                         left: 48,   // เว้นพื้นที่ before / after ไว้
                                         right: 8,
                                         borderRadius: '10px',
-                                        backgroundColor: selectedLink === item.path
+                                        backgroundColor: isSubmenuSelected
                                             ? theme.palette.action.hover
                                             : 'transparent',
                                         transition: 'all 0.2s ease',
@@ -204,14 +213,15 @@ const ListButtonMenu: React.FC<ListButtonMenuProps> = ({
                                             <Typography
                                                 sx={{
                                                     fontSize: open ? theme.typography.body2.fontSize : 8,
-                                                    fontWeight: selectedLink === item.path ? 600 : 400,
-                                                    color: theme.palette.mode === 'dark'
-                                                        ? (selectedLink === item.path
-                                                            ? theme.palette.primary.main
-                                                            : theme.palette.grey[500])
-                                                        : (selectedLink === item.path
-                                                            ? theme.palette.primary.main
-                                                            : theme.palette.text.primary),
+                                                    fontWeight: isSubmenuSelected ? 600 : 400,
+                                                    color:
+                                                        isSubmenuSelected
+                                                            ? theme.palette.mode === "dark"
+                                                                ? theme.palette.secondary.main
+                                                                : theme.palette.primary.main
+                                                            : theme.palette.mode === "dark"
+                                                                ? theme.palette.common.white
+                                                                : theme.palette.text.primary,
                                                 }}
                                             >
                                                 {item.label}

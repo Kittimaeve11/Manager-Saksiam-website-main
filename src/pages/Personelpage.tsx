@@ -9,9 +9,9 @@ import { useAuth } from '../Context/AuthContext';
 import ComponentRoletypeSelete from '../components/View/Role/ComponentRoletypeSelete';
 import { datastatus } from '../API/StausData';
 import MenuDropdownstatus from '../components/Model/Dropdown/MenuDropdownstatus';
-import AppIconButton from '../components/Model/Buttom/IconButton';
+import AppIconButton from '../components/Buttom/IconButton';
 import { FiRefreshCw } from 'react-icons/fi';
-import TextButton from '../components/Model/Buttom/TextButton';
+import TextButton from '../components/Buttom/TextButton';
 import ComponentsUserTableView from '../components/View/Users/ComponentsUserTableView';
 
 type FileType = 'all' | 'active' | 'inactive'

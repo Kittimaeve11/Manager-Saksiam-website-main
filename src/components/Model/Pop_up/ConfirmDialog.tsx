@@ -1,4 +1,4 @@
-import { Box,  Dialog, DialogActions, DialogContent, DialogTitle, styled, Typography, useTheme } from '@mui/material';
+import { Box, Dialog, DialogActions, DialogContent, DialogTitle, styled, Typography, useTheme } from '@mui/material';
 import React, { useEffect, useState } from 'react'
 import type { ConfirmDialogProps } from '../../../utils/types';
 import loaddata from '../../../assets/Image/clock_time.gif';
@@ -8,7 +8,7 @@ import editIcon from '../../../assets/Image/Drawing.gif';
 import deleteIcon from '../../../assets/Image/raccoon_bin.gif';
 import alternateIcon from '../../../assets/Image/Copy.gif';
 import statusIcon from '../../../assets/Image/click.gif';
-import TextButton from '../Buttom/TextButton';
+import TextButton from '../../Buttom/TextButton';
 
 
 const AnimatedDialog = styled(Dialog)({
@@ -112,14 +112,24 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
                     animation: 'pulse 0.5s ease-in-out',
                 }),
             }}
-            PaperProps={{
-                sx: {
-                    backgroundColor: theme.palette.mode === 'dark' ? theme.palette.primary.darker : theme.palette.common.white,
-                    color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000',
-                    boxShadow: theme.palette.mode === 'dark'
-                        ? '0px 4px 20px rgba(0, 0, 0, 0.9)'
-                        : '0px 4px 20px rgba(0, 0, 0, 0.1)',
-                }
+
+            slotProps={{
+                paper: {
+                    sx: {
+                        backgroundColor:
+                            theme.palette.mode === 'dark'
+                                ? theme.palette.primary.darker
+                                : theme.palette.common.white,
+                        color:
+                            theme.palette.mode === 'dark'
+                                ? '#ffffff'
+                                : '#000000',
+                        boxShadow:
+                            theme.palette.mode === 'dark'
+                                ? '0px 4px 20px rgba(0, 0, 0, 0.9)'
+                                : '0px 4px 20px rgba(0, 0, 0, 0.1)',
+                    },
+                },
             }}
         >
             {confirmDialog.isLoading ? (
@@ -157,7 +167,7 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
 
                     <DialogActions sx={{ justifyContent: 'center', pb: 4 }}>
                         <TextButton
-                            
+
                             onClick={() =>
                                 setConfirmDialog((prev) => ({ ...prev, isOpen: false }))
                             }

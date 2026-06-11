@@ -20,9 +20,10 @@ import { usePageTitle } from "../../Context/PageTitleContext";
 import type { Column } from "../../utils/types";
 import ComponentTableModel from "../../components/Model/Table/ComponentTableModel";
 import StyledTableCell from "../../components/Model/Table/StyledTableCell";
-import TextButton from "../../components/Model/Buttom/TextButton";
+import TextButton from "../../components/Buttom/TextButton";
 import ConfirmDialog from "../../components/Model/Pop_up/ConfirmDialog";
 import Notifications from "../../components/Model/Pop_up/Notifications";
+import { rankScrollSx } from "../../theme/styles/rankScroll";
 
 type FaqTypeRankItem = {
   faqtypeID: number;
@@ -69,9 +70,7 @@ const FaqTypeRankpage = () => {
 
   useEffect(() => {
     setTitle("เรียงลำดับประเภทคำถามที่พบบ่อย");
-  }, [setTitle]);
 
-  useEffect(() => {
     const fetchInitialData = async () => {
       try {
         const response = await apiFetch(`/api/auther/showFaqTypelistAPI`, {
@@ -101,7 +100,7 @@ const FaqTypeRankpage = () => {
     };
 
     fetchInitialData();
-  }, []);
+  }, [setTitle]);
 
   const onDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
@@ -180,7 +179,7 @@ const FaqTypeRankpage = () => {
             }),
           });
 
-          navigate("/faq/type", {
+          navigate("/Faq_Type", {
             state: {
               notify: {
                 message: "บันทึกการจัดลำดับสำเร็จ",
@@ -252,7 +251,7 @@ const FaqTypeRankpage = () => {
                       </Typography>
                     </Box>
                   ) : faqTypes.length > 0 ? (
-                    <Box sx={{ overflowX: "hidden", overflowY: "auto", maxHeight: 500, position: "relative" }}>
+                    <Box sx={rankScrollSx}>
                       <DndContext collisionDetection={closestCenter} onDragEnd={onDragEnd}>
                         <ComponentTableModel columns={columns} largest="md">
                           <SortableContext

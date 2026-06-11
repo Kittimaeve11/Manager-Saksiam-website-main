@@ -48,6 +48,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       .then((data) => {
         setUser(data.user);
         setPermissions(data.permissions || []);
+        if (data.user) {
+          localStorage.setItem("current_user", JSON.stringify(data.user));
+        }
       })
       .finally(() => setLoading(false));
 
@@ -72,6 +75,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     localStorage.setItem("access_token", access_token);
     setUser(user);
+    if (user) {
+      localStorage.setItem("current_user", JSON.stringify(user));
+    }
 
     // ดึงสิทธิ์
     const profileRes = await apiFetch("/api/auther/profile", {
@@ -81,6 +87,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const profileData = await profileRes.json();
     setUser(profileData.user || []);
     setPermissions(profileData.permissions || []);
+    if (profileData.user) {
+      localStorage.setItem("current_user", JSON.stringify(profileData.user));
+    }
 
     return profileData.permissions; // 👉 ส่ง permissions กลับไปให้ Loginpage ใช้
   };
@@ -113,6 +122,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // ลบ access_token
     localStorage.removeItem("access_token");
+    localStorage.removeItem("current_user");
 
     // ล้าง state
     setUser(null);

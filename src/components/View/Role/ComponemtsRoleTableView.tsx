@@ -8,7 +8,7 @@ import Loading from '../../../assets/Image/Loading.gif'
 import StyledTableCell from '../../Model/Table/StyledTableCell'
 import ComponentsDateTable from '../../Model/Table/ComponentsDateTable'
 import { HiPencil } from 'react-icons/hi'
-import AppIconButton from '../../Model/Buttom/IconButton'
+import AppIconButton from '../../Buttom/IconButton'
 
 interface ComponemtsRoleTableViewProps {
     roleData: RolePermisionData

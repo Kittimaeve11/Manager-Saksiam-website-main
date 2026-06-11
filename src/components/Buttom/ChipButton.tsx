@@ -1,7 +1,7 @@
 import React from "react";
 import { Chip, Box, useTheme, type ChipProps } from "@mui/material";
 import { lighten, darken } from "@mui/material/styles";
-import { statusConfig } from "../../../API/StausData";
+import { statusConfig } from "../../API/StausData";
 
 type StatusType = keyof typeof statusConfig;
 

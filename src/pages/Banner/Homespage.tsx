@@ -7,13 +7,14 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import MenuDropdownstatus from '../../components/Model/Dropdown/MenuDropdownstatus';
 import { datastatus, datastatusBaner } from '../../API/StausData';
 import type { BannerData } from '../../utils/types';
-import TextButton from '../../components/Model/Buttom/TextButton';
-import AppIconButton from '../../components/Model/Buttom/IconButton';
+import TextButton from '../../components/Buttom/TextButton';
+import AppIconButton from '../../components/Buttom/IconButton';
 import { FiRefreshCw } from 'react-icons/fi';
 import { apiFetch } from '../../API/client';
 import ConfirmDialog from '../../components/Model/Pop_up/ConfirmDialog';
 import Notifications from '../../components/Model/Pop_up/Notifications';
 import ComponentsBannerTableView from '../../components/View/Banner/ComponentsBannerTableView';
+import MenuDropdownSeletetext from '../../components/Model/Dropdown/MenuDropdownSeletetext';
 
 
 type FileType = 'all' | 'active' | 'inactive'
@@ -35,7 +36,7 @@ const Homespage = () => {
   const [rowsPerPage, setRowsPerPage] = useState(15);
   const [fileType, setFileType] = useState<FileType>('all');
   const [fetchFileType, setFetchFileType] = useState<FileType>('all');
-  const [selectedType, setSelectedType] = useState('all');
+  const [selectedType, setSelectedType] = useState<string | null>('all');
   const [brandData, setBrandData] = useState<BannerData>({ bannerscount: 0, bannder: [] })
 
   const [notify, setNotify] = useState({
@@ -61,7 +62,7 @@ const Homespage = () => {
   };
 
   const handleMoveItemClick = () => {
-     navigate(`/Banner/rank}`);
+    navigate(`/Banner/rank`);
   };
 
   const fetchshowBrander = useCallback(async () => {
@@ -77,6 +78,7 @@ const Homespage = () => {
 
       const query = new URLSearchParams({
         active: activeFilter,
+        type: selectedType === 'all' ? '' : String(selectedType),
         offset: String(offset),
         limit: String(rowsPerPage),
       }).toString();
@@ -95,6 +97,7 @@ const Homespage = () => {
     }
   }, [
     fetchFileType,
+    selectedType,
     page,
     rowsPerPage,
   ]);
@@ -106,6 +109,7 @@ const Homespage = () => {
   const handleRefresh = () => {
     setFileType('all');
     setFetchFileType('all');
+    setSelectedType('all');
     setPage(0);
   }
 
@@ -140,7 +144,7 @@ const Homespage = () => {
           ?.name || "Unknown";
 
       const payloadlog = {
-        actionType: 11,
+        actionType: 12,
         actionDetail: `เปลี่ยนสถานะข้อมูลแบนเนอร์หน้าหลัก รหัสแบนเนอร์: ${BannerID} ${name} เป็น ${active === "1" ? "เปิดใช้งาน" : "ปิดใช้งาน"
           }`,
         datatype: "หน้าหลัก",
@@ -161,14 +165,14 @@ const Homespage = () => {
       if (fetchFileType === "all") {
         setBrandData((prev) => ({
           ...prev,
-          branderscounts: prev.bannder.map((item) =>
+          bannder: prev.bannder.map((item) =>
             item.id === BannerID
               ? { ...item, active: active }
               : item
           ),
         }));
       } else {
-        // fetchshowBanner();
+        fetchshowBrander();
       }
 
       setNotify({
@@ -221,7 +225,7 @@ const Homespage = () => {
               ?.name || "Unknown";
 
           const payloadlog = {
-            actionType: 10,
+            actionType: 11,
             actionDetail: `ลบข้อมูลแบนเนอร์หน้าหลัก รหัสแบนเนอร์: ${BannerID}  ${name}`,
             IDPer: user?.id,
             typeUser: user?.role_name,
@@ -319,10 +323,10 @@ const Homespage = () => {
               width: { xs: '100%', md: 'auto' },
             }}
           >
-             <MenuDropdownstatus
+            <MenuDropdownSeletetext
               titlename='หมวดหมู่หน้า'
-              handleFileTypeChange={handleFileTypeChange}
-              fileType={fileType}
+              selectedType={selectedType}
+              setSelectedType={setSelectedType}
               statusOptions={datastatusBaner}
             />
             <MenuDropdownstatus
@@ -331,7 +335,7 @@ const Homespage = () => {
               fileType={fileType}
               statusOptions={datastatus}
             />
-           
+
           </Box>
           <Box
             sx={{
@@ -360,7 +364,7 @@ const Homespage = () => {
                   borderColor: theme.palette.grey[900],
                   backgroundColor: 'white'
                 }}
-              onClick={handleMoveItemClick} 
+                onClick={handleMoveItemClick}
               >
                 เรียงลำดับแบนเนอร์หน้าหลัก
               </TextButton>
@@ -369,7 +373,7 @@ const Homespage = () => {
 
             <AppIconButton
               title="รีเฟรชข้อมูล"
-            onClick={handleRefresh}
+              onClick={handleRefresh}
 
 
             >
@@ -392,14 +396,7 @@ const Homespage = () => {
             setRowsPerPage={setRowsPerPage}
             handleDeleteChange={handleDeleteChange}
             handleStatusChange={handleStatusChange}
-            fetchshowBrander={fetchshowBrander}
-            // setEditForm={setEditForm}
-            setNotify={setNotify}
-            currentUserId={user?.id ?? 0}
             can={can}
-            fullnamePer={`${user?.fname ?? ""} ${user?.lname ?? ""}`}
-            typeUser={`${user?.role_name ?? ""}`}
-            IDPer={`${user?.id ?? ""}`}
           />
         </Box>
       </Paper>

@@ -5,7 +5,7 @@ import type { FormProfileData, FormProfileDataErrors } from '../../../utils/type
 import { validateProfileForm } from '../../../utils/validation';
 import { apiFetch } from '../../../API/client';
 import dayjs from 'dayjs';
-import TextButton from '../../Model/Buttom/TextButton';
+import TextButton from '../../Buttom/TextButton';
 import MenuAddressNumber from '../../Model/Dropdown/MenuAddressNumber';
 import BasicDatePicker from '../../Model/TextField/BasicDatePicker';
 import BasicTextField from '../../Model/TextField/BasicTextField';

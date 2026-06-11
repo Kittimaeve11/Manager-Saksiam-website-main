@@ -7,8 +7,8 @@ import { useNavigate } from 'react-router-dom';
 import { FiRefreshCw } from 'react-icons/fi';
 import ComponemtsRoleTableView from '../../components/View/Role/ComponemtsRoleTableView';
 import { apiFetch } from '../../API/client';
-import TextButton from '../../components/Model/Buttom/TextButton';
-import AppIconButton from '../../components/Model/Buttom/IconButton';
+import TextButton from '../../components/Buttom/TextButton';
+import AppIconButton from '../../components/Buttom/IconButton';
 import { usePageTitle } from '../../Context/PageTitleContext';
 
 interface RolePermisionData {

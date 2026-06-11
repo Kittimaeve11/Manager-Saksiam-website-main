@@ -1,17 +1,19 @@
-import { Box, Container, Grid, Paper, Typography, useTheme } from '@mui/material'
-import React, { useState } from 'react'
+import { Box, Container, Grid, Paper, Typography, useTheme } from '@mui/material';
+import React, { useEffect, useState } from 'react'
 import { useAuth } from '../../Context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import type { FormBannerData, FormBannerDataErrors } from '../../utils/types';
 import { validataBannerForm } from '../../utils/validation';
-import { apiFetch } from '../../API/client';
-import TextButton from '../../components/Model/Buttom/TextButton';
 import BasicTextField from '../../components/Model/TextField/BasicTextField';
 import BoxUploadBanner from '../../components/Model/Upload/BoxUploadBanner';
-import ConfirmDialog from '../../components/Model/Pop_up/ConfirmDialog';
 import Notifications from '../../components/Model/Pop_up/Notifications';
+import ConfirmDialog from '../../components/Model/Pop_up/ConfirmDialog';
+import TextButton from '../../components/Buttom/TextButton';
+import { apiFetch } from '../../API/client';
 
-const Homescreatepage = () => {
+const Homeseditpage = () => {
+    const { id } = useParams();
+    const BranderID = id ? Number(id) : undefined;
     const theme = useTheme();
     const { user } = useAuth();
     const navigate = useNavigate();
@@ -20,6 +22,14 @@ const Homescreatepage = () => {
     const [linkpage, setLinkPage] = useState("");
     const [picturePC, setPicturePC] = useState<File | null>(null);
     const [pictureMoblie, setPictureMoblie] = useState<File | null>(null);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [originalData, setOriginalData] = useState({
+        brandername: '',
+        linkpage: '',
+        picturePC: null as string | File | null,
+        pictureMoblie: null as string | File | null
+    })
+
     const [error, setError] = useState<FormBannerDataErrors>({
         brandername: '',
         picturePC: '',
@@ -55,68 +65,142 @@ const Homescreatepage = () => {
             [fieldName]: errors[fieldName]
         }))
     }
+    useEffect(() => {
+        const fetchData = async () => {
+            if (!BranderID) return;
 
+            setLoading(true);
 
-    const handleSubmit = async (event: React.FormEvent) => {
-        event.preventDefault();
-        const branderfomeData = {
+            try {
+                const response = await apiFetch(
+                    `/api/auther/showbannerIDAPI/${BranderID}`,
+                );
+
+                const data = await response.json();
+
+                const brand = data.data || {};
+
+                setBranderName(brand.name || "");
+                setLinkPage(brand.link || "");
+                setPicturePC(brand.picturePC || "");
+                setPictureMoblie(brand.pictureMoblie || "");
+
+                setOriginalData({
+                    brandername: brand.name || "",
+                    linkpage: brand.link || "",
+                    picturePC: brand.picturePC || "",
+                    pictureMoblie: brand.pictureMoblie || "",
+                });
+
+            } catch (error) {
+                console.error("Error loading Brander details:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+    }, [BranderID]);
+
+    const handleBranderSubmit = async (brander: React.FormEvent) => {
+        brander.preventDefault();
+        const branderformData = {
             brandername,
+            linkpage,
             picturePC,
-            pictureMoblie,
+            pictureMoblie
         }
-        const errors = validataBannerForm(branderfomeData)
-
+        const errors = validataBannerForm(branderformData)
         if (Object.values(errors).some((error) => error)) {
             setError(errors);
             return;
         }
-        const formDataAddbrander = new FormData()
-        if (picturePC !== null) {
-            formDataAddbrander.append('picturePC', picturePC)
+
+        let hasChanges = false;
+        const formData = new FormData();
+
+        if (brandername !== originalData.brandername) {
+            formData.append('brandername', brandername)
+            hasChanges = true;
         }
-        if (pictureMoblie !== null) {
-            formDataAddbrander.append('pictureMoblie', pictureMoblie)
+
+        if (linkpage !== originalData.linkpage) {
+            formData.append('linkpage', linkpage)
+            hasChanges = true;
         }
-        formDataAddbrander.append('bannername', brandername);
-        formDataAddbrander.append('linkpage', linkpage);
-        formDataAddbrander.append('typename', "หน้าหลัก");
-        formDataAddbrander.append('active', "1");
-        formDataAddbrander.append('savename', `${user?.fname} ${user?.lname}`);
+
+        if (picturePC !== null && picturePC !== originalData.picturePC) {
+            if (typeof picturePC !== 'string') {
+                formData.append('picturePC', picturePC)
+            }
+            hasChanges = true;
+        }
+
+        if (pictureMoblie !== null && pictureMoblie !== originalData.pictureMoblie) {
+            if (typeof pictureMoblie !== 'string') {
+                formData.append('pictureMoblie', pictureMoblie)
+            }
+            hasChanges = true;
+        }
+
+
+        if (!hasChanges) {
+            setNotify({
+                isOpen: true,
+                message: 'ไม่มีการเปลี่ยนแปลงข้อมูล',
+                type: 'info',
+            });
+            return;
+        }
+        formData.append('updatename', `${user?.fname} ${user?.lname}`);
 
         setConfirmDialog({
             isOpen: true,
             isLoading: false,
-            onConfirm: () => handleConfirmSubmit(formDataAddbrander)
+            onConfirm: () => handleConfirmSubmit(formData)
         });
     }
 
-
-    const handleConfirmSubmit = async (formData: FormData) => {
+    const handleConfirmSubmit = async (FormData: FormData) => {
         setConfirmDialog((prev) => ({ ...prev, isLoading: true }));
 
         try {
-            // ---------- CREATE BRANDER API ----------
-            const response = await apiFetch(`/api/auther/createbannerAPI`, {
+            // ---------- UPDATE API ----------
+            const response = await apiFetch(`/api/auther/updatebannerAPI/${BranderID}`, {
                 method: "POST",
-                body: formData,
+                body: FormData,
             });
 
-            const responseData = await response.json();
-
             if (!response.ok) {
-                throw new Error(responseData.message || "สร้างข้อมูลไม่สำเร็จ");
+                throw new Error("Update failed");
             }
 
-            const branderID = responseData.data?.int_saksolar_brander_ID;
+            // ---------- CHECK CHANGES ----------
+            const changes: string[] = [];
+
+            if (originalData.brandername !== brandername) {
+                changes.push(`ชื่อแบนเนอร์ "${originalData.brandername}" → "${brandername}"`);
+            }
+            if (originalData.linkpage !== linkpage) {
+                changes.push(`ลิงค์หน้าผลิตภัณฑ์ "${originalData.linkpage}" → "${linkpage}"`);
+            }
+            if (originalData.picturePC !== picturePC) {
+                changes.push(`รูปแบนเนอร์ขนาดเดสก์ท็อป`);
+            }
+            if (originalData.pictureMoblie !== pictureMoblie) {
+                changes.push(`รูปแบนเนอร์ขนาดโทรศัพท์`);
+            }
+
+            const actionDetail = `ฟอร์มแก้ไขแบนเนอร์หน้าหลัก | ID: ${BranderID} ${changes.length > 0 ? changes.join(", ") : ""
+                }`;
 
             // ---------- LOG API ----------
             const payloadlog = {
-                actionType: 8,
-                actionDetail: `ฟอร์มเพิ่มแบนเนอร์หน้าหลัก | รหัสแบนเนอร์: ${branderID} | ชื่อแบนเนอร์: ${brandername} ${linkpage ? `(ลิงค์: ${linkpage})` : ""
-                    }`,
+                actionType: 10,
+                actionDetail,
                 typeUser: user?.role_name,
-                datatype: "หน้าแบนเนอร์",
-                dataID: branderID,
+                datatype: "หน้าหลัก",
+                dataID: BranderID,
                 dataname: brandername,
                 IDPer: user?.id,
                 FullPer: `${user?.fname} ${user?.lname}`,
@@ -124,12 +208,12 @@ const Homescreatepage = () => {
 
             await apiFetch(`/api/auther/log`, {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payloadlog),
             });
 
+
+            // ---------- UI FEEDBACK ----------
             navigate("/Banner", {
                 state: {
                     notify: {
@@ -152,6 +236,7 @@ const Homescreatepage = () => {
 
         } finally {
             setConfirmDialog({ isOpen: false, isLoading: false, onConfirm: () => { } });
+
         }
     };
 
@@ -183,7 +268,7 @@ const Homescreatepage = () => {
                     <Typography variant="h6" component="label" sx={{ display: 'flex', alignItems: 'center', gap: 1, fontWeight: 600 }}>
                         ฟอร์มการบันทึกข้อมูลแบนเนอร์
                     </Typography>
-                    <Box width='100%' sx={{ px: { xs: 2, sm: 5 } }}>
+                    <Box  sx={{ px: { xs: 2, sm: 5 },width:'100%' }}>
                         <Grid container spacing={5}>
                             <Grid size={{ xs: 12, xl: 6 }}>
                                 <BasicTextField
@@ -222,7 +307,7 @@ const Homescreatepage = () => {
                                     error1={error.picturePC}
                                     error2={error.pictureMoblie}
                                     handleFieldChange={handleFieldChange}
-                                    loading={null}
+                                    loading={loading}
                                     topon={0}
                                 />
                             </Grid>
@@ -236,16 +321,17 @@ const Homescreatepage = () => {
                         >
 
                             <TextButton
-                                onClick={handleSubmit}
+                                onClick={handleBranderSubmit}
+                                sx={{ backgroundColor: theme.palette.warning.main }}
                             >
-                                บันทึกข้อมูล
+                                แก้ไขข้อมูล
                             </TextButton>
                         </Box>
                     </Box>
                 </Box>
             </Paper>
             <ConfirmDialog
-                type='add'
+                type='edit'
                 confirmDialog={confirmDialog}
                 setConfirmDialog={setConfirmDialog}
             />
@@ -254,4 +340,4 @@ const Homescreatepage = () => {
     )
 }
 
-export default Homescreatepage
+export default Homeseditpage

@@ -23,6 +23,10 @@ interface MenuAddressNumberProps {
     zipcode: string;
     setZipcode: (v: string) => void;
 
+    setDistrictID?: (v: number | null) => void;
+    setAmphoeID?: (v: number | null) => void;
+    setProvinceID?: (v: number | null) => void;
+
     handleFieldChange?: (field: string, value: unknown) => void;
     specify?: boolean;
     error?: string;
@@ -46,6 +50,9 @@ const MenuAddressNumber: React.FC<MenuAddressNumberProps> = ({
 
     zipcode,
     setZipcode,
+    setDistrictID,
+    setAmphoeID,
+    setProvinceID,
 
     handleFieldChange,
     error,
@@ -111,6 +118,9 @@ const MenuAddressNumber: React.FC<MenuAddressNumberProps> = ({
         const newProvince = p?.name_th || "";
 
         setProvince(newProvince);
+        setProvinceID?.(id || null);
+        setAmphoeID?.(null);
+        setDistrictID?.(null);
         handleFieldChange?.(`${fieldKeyPrefix}_province`, newProvince);
 
         // reset district / amphoe / zipcode
@@ -129,6 +139,8 @@ const MenuAddressNumber: React.FC<MenuAddressNumberProps> = ({
         const newAmphoe = a?.name_th || "";
 
         setAmphoe(newAmphoe);
+        setAmphoeID?.(id || null);
+        setDistrictID?.(null);
         handleFieldChange?.(`${fieldKeyPrefix}_amphoe`, newAmphoe);
 
         // reset tambon / zipcode
@@ -146,6 +158,7 @@ const MenuAddressNumber: React.FC<MenuAddressNumberProps> = ({
         const newZipcode = t?.zip_code?.toString() || "";
 
         setDistrict(newDistrict);
+        setDistrictID?.(id || null);
         setZipcode(newZipcode);
 
         handleFieldChange?.(`${fieldKeyPrefix}_district`, newDistrict);
@@ -172,16 +185,14 @@ const MenuAddressNumber: React.FC<MenuAddressNumberProps> = ({
                             setAddress(e.target.value);
                             handleFieldChange?.(`${fieldKeyPrefix}_address`, e.target.value);
                         }}
-                        InputProps={{
-                            sx: {
-                                fontSize: theme.typography.body2.fontSize,
-                            },
+                        slotProps={{
+                            htmlInput: {
+                                sx: { fontSize: theme.typography.body2.fontSize, }
+                            }
                         }}
+
                         sx={{
                             '& .MuiInputLabel-root': {
-                                color: theme.palette.primary.main
-                            },
-                            '& .MuiInputLabel-root.Mui-focused': {
                                 color: theme.palette.primary.main
                             },
                             '& .MuiInputBase-input': {
@@ -193,15 +204,19 @@ const MenuAddressNumber: React.FC<MenuAddressNumberProps> = ({
                                 opacity: 1
                             },
 
+                            '& .MuiInputLabel-root.Mui-focused': {
+                                color: theme.palette.primary.main
+                            },
+                            '& .MuiFormHelperText-root': {
+                                fontSize: theme.typography.caption.fontSize,
+                                fontWeight: 400,
+                            },
+                            fontSize: theme.typography.body2.fontSize,
+                            mt: 1
                         }}
                         error={!!error}
                         helperText={error}
-                        FormHelperTextProps={{
-                            sx: {
-                                fontSize: theme.typography.caption.fontSize,
-                                fontWeight: 400
-                            }
-                        }}
+
                     />
 
                 </Grid>
@@ -215,13 +230,16 @@ const MenuAddressNumber: React.FC<MenuAddressNumberProps> = ({
                         value={provinceId}
                         onChange={handleProvinceChange}
                         error={!!error}
+                        sx={{ mt: 1 }}
                     >
-                        <MenuItem value={0}>เลือกจังหวัด</MenuItem>
-                        {provinces.map((p) => (
-                            <MenuItem key={p.id} value={p.id}>
-                                {p.name_th}
-                            </MenuItem>
-                        ))}
+                        <MenuItem value={0} sx={{fontSize:theme.typography.body2.fontSize}}>เลือกจังหวัด</MenuItem>
+                        {[...provinces]
+                            .sort((a, b) => a.name_th.localeCompare(b.name_th, 'th'))
+                            .map((p) => (
+                                <MenuItem key={p.id} value={p.id}>
+                                    {p.name_th}
+                                </MenuItem>
+                            ))}
                     </TextField>
                 </Grid>
 
@@ -236,11 +254,13 @@ const MenuAddressNumber: React.FC<MenuAddressNumberProps> = ({
                         error={!!error}
                     >
                         <MenuItem value={0}>เลือกอำเภอ</MenuItem>
-                        {filteredAmphures.map((a) => (
-                            <MenuItem key={a.id} value={a.id}>
-                                {a.name_th}
-                            </MenuItem>
-                        ))}
+                        {[...filteredAmphures]
+                            .sort((a, b) => a.name_th.localeCompare(b.name_th, 'th'))
+                            .map((a) => (
+                                <MenuItem key={a.id} value={a.id}>
+                                    {a.name_th}
+                                </MenuItem>
+                            ))}
                     </TextField>
                 </Grid>
 
@@ -255,11 +275,13 @@ const MenuAddressNumber: React.FC<MenuAddressNumberProps> = ({
                         error={!!error}
                     >
                         <MenuItem value={0}>เลือกตำบล</MenuItem>
-                        {filteredTambons.map((t) => (
-                            <MenuItem key={t.id} value={t.id}>
-                                {t.name_th}
-                            </MenuItem>
-                        ))}
+                        {[...filteredTambons]
+                            .sort((a, b) => a.name_th.localeCompare(b.name_th, 'th'))
+                            .map((t) => (
+                                <MenuItem key={t.id} value={t.id}>
+                                    {t.name_th}
+                                </MenuItem>
+                            ))}
                     </TextField>
                 </Grid>
 

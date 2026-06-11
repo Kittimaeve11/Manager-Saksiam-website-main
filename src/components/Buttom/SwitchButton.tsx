@@ -80,15 +80,21 @@ const IOSSwitch = styled((props: SwitchProps) => (
 
 interface ChackProps {
   checked: boolean
+  disabled?: boolean
   handleChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const SwitchButton : React.FC<ChackProps> = ({ checked, handleChange })  => {
-   return (
+const SwitchButton: React.FC<ChackProps> = ({ checked, handleChange,disabled }) => {
+  return (
     <IOSSwitch
+      disabled={disabled}
       checked={checked}
       onChange={handleChange}
-      inputProps={{ "aria-label": "custom switch" }}
+      slotProps={{
+        input: {
+          'aria-label': 'custom switch',
+        },
+      }}
     />
   );
 }

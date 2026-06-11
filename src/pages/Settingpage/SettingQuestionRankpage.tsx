@@ -10,9 +10,10 @@ import type { Column } from '../../utils/types';
 import ComponentTableModel from '../../components/Model/Table/ComponentTableModel';
 import StyledTableCell from '../../components/Model/Table/StyledTableCell';
 import { FaExpandArrowsAlt } from 'react-icons/fa';
-import TextButton from '../../components/Model/Buttom/TextButton';
+import TextButton from '../../components/Buttom/TextButton';
 import ConfirmDialog from '../../components/Model/Pop_up/ConfirmDialog';
 import Notifications from '../../components/Model/Pop_up/Notifications';
+import { rankScrollSx } from '../../theme/styles/rankScroll';
 
 interface DataTopicsProps {
     topic_ID: number
@@ -204,7 +205,7 @@ const SettingQuestionRankpage = () => {
                                             </Typography>
                                         </Box>
                                     ) : topics.length > 0 ? (
-                                        <Box sx={{ overflowX: 'hidden', overflowY: 'auto', maxHeight: 500, position: 'relative' }}>
+                                        <Box sx={rankScrollSx}>
                                             <DndContext collisionDetection={closestCenter} onDragEnd={onDragEnd}>
                                                 <ComponentTableModel columns={columns} largest='md'>
                                                     <SortableContext items={topics.map((item) => item.topic_ID)} strategy={rectSortingStrategy}>

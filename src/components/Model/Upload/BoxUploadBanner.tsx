@@ -5,8 +5,8 @@ import imageCompression from 'browser-image-compression';
 import ComputerIcon from '@mui/icons-material/Computer';
 import CloseIcon from '@mui/icons-material/Close';
 import PhoneAndroidIcon from '@mui/icons-material/PhoneAndroid';
-import TextButton from '../Buttom/TextButton';
-import AppIconButton from '../Buttom/IconButton';
+import TextButton from '../../Buttom/TextButton';
+import AppIconButton from '../../Buttom/IconButton';
 import Notifications from '../Pop_up/Notifications';
 
 const BASE_URL_API = import.meta.env.VITE_BASE_URL_API_PHOTO;

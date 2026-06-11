@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useCallback, useEffect, useState } from "react";
 import type { ChangeEvent } from "react";
@@ -18,8 +18,8 @@ import { useAuth } from "../../Context/AuthContext";
 import MenuDropdownstatus from "../../components/Model/Dropdown/MenuDropdownstatus";
 import { datastatusType } from "../../API/StausData";
 
-import TextButton from "../../components/Model/Buttom/TextButton";
-import AppIconButton from "../../components/Model/Buttom/IconButton";
+import TextButton from "../../components/Buttom/TextButton";
+import AppIconButton from "../../components/Buttom/IconButton";
 import { FiRefreshCw } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 
@@ -94,10 +94,6 @@ const FaqTypepage = () => {
 
   const fullName = `${user?.fname ?? ""} ${user?.lname ?? ""}`.trim();
 
-  useEffect(() => {
-    setTitle("การจัดการประเภทคำถามที่พบบ่อย");
-  }, [setTitle]);
-
   const handleFileTypeChange = (event: ChangeEvent<{ value: unknown }>) => {
     const newType = event.target.value as FileType;
     setFileType(newType);
@@ -150,8 +146,9 @@ const FaqTypepage = () => {
   }, [fetchFileType, page, rowsPerPage]);
 
   useEffect(() => {
+    setTitle("การจัดการประเภทคำถามที่พบบ่อย");
     fetchFaqType();
-  }, [fetchFaqType]);
+  }, [fetchFaqType, setTitle]);
 
   const handleAddItemClick = () => {
     setEditForm(false);
@@ -159,7 +156,7 @@ const FaqTypepage = () => {
   };
 
   const handleMoveItemClick = () => {
-    navigate("/faq/type/rank");
+    navigate("/Faq_Type/rank");
   };
 
   const handleEditItemClick = (id: number) => {
@@ -221,12 +218,8 @@ const FaqTypepage = () => {
         setConfirmDialog((prev) => ({ ...prev, isLoading: true }));
 
         try {
-          const response = await apiFetch(`/api/auther/updateFaqTypeAPI/${id}`, {
-            method: "PUT",
-            body: JSON.stringify({
-              active: "0",
-              changename: fullName || "Unknown",
-            }),
+          const response = await apiFetch(`/api/auther/deleteFaqTypeAPI/${id}`, {
+            method: "DELETE",
           });
 
           if (!response.ok) {
@@ -234,29 +227,24 @@ const FaqTypepage = () => {
             throw new Error(errorData.message || "Delete failed");
           }
 
-          if (fetchFileType === "all") {
-            setFaqTypeData((prev) => ({
-              ...prev,
-              faqtypes: prev.faqtypes.map((item) =>
-                item.int_saksiam_typefqa_id === id
-                  ? { ...item, int_saksiam_typefqa_active: "0" }
-                  : item
-              ),
-            }));
-          } else {
-            fetchFaqType();
-          }
+          setFaqTypeData((prev) => ({
+            ...prev,
+            counts: Math.max(prev.counts - 1, 0),
+            faqtypes: prev.faqtypes.filter(
+              (item) => item.int_saksiam_typefqa_id !== id
+            ),
+          }));
 
           setNotify({
             isOpen: true,
-            message: "ปิดใช้งานข้อมูลสำเร็จ",
+            message: "ลบข้อมูลสำเร็จ",
             type: "success",
           });
         } catch (error) {
           console.error("Error deleting FAQ type:", error);
           setNotify({
             isOpen: true,
-            message: "ไม่สามารถปิดใช้งานข้อมูลได้",
+            message: "ไม่สามารถลบข้อมูลได้",
             type: "error",
           });
         } finally {
@@ -357,12 +345,11 @@ const FaqTypepage = () => {
               mx: { xs: 1, md: 0, xl: 0 },
               mt: { xs: 1, md: 3 },
               width: "100%",
-              gap: 2,
             }}
           >
             {can("FAQ") && (
               <TextButton onClick={handleAddItemClick}>
-                เพิ่มประเภทคำถาม
+                เพิ่มคำถามที่พบบ่อย
               </TextButton>
             )}
 

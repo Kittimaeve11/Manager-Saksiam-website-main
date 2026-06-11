@@ -1,14 +1,12 @@
 import { Box, MenuItem, TextField, Typography } from '@mui/material';
 import React from 'react'
 
-type FileType = 'all' | 'active' | 'inactive' | 'wait' | 'inapprived' | 'editfix' | 'pinin';
-
 interface MenuDropdownItemProps {
   titlename: string;
   handleFileTypeChange: (event: React.ChangeEvent<{
     value: unknown;
   }>) => void
-  fileType: FileType
+  fileType: string
   statusOptions: {
     valuename: string;
     labelname: string;

@@ -5,6 +5,13 @@
 import type { Dispatch, SetStateAction } from "react";
 import type { Dayjs } from "dayjs";
 // -------------------------------------------------------------------
+
+
+export interface OptionType {
+  id: number;
+  valuename: string;
+  labelname: string;
+}
 export interface Column {
   id: number;
   label: string;
@@ -20,6 +27,7 @@ export interface ComponentsTextModelProps {
   topon: number
   handleFieldChange: (fieldName: string, value: unknown) => void
   error: string | undefined
+  row?: number
   fieldKey: string
   specify: boolean
 }
@@ -68,8 +76,9 @@ export interface BoxUploadProfileProps {
   loading: boolean | null
   topon: number
 }
+
 export interface BoxUploadBannerProps {
- filepicturePC: string | File | null;
+  filepicturePC: string | File | null;
   setFilepicturePC: React.Dispatch<React.SetStateAction<File | null>>
   filpictureMoblie: string | File | null;
   setFilepictureMoblie: React.Dispatch<React.SetStateAction<File | null>>
@@ -82,6 +91,30 @@ export interface BoxUploadBannerProps {
   topon: number
 }
 
+
+export interface BoxUploadLoanProps {
+  imagelarge: string | File | null;
+  setImageLarge: React.Dispatch<React.SetStateAction<File | null>>
+  imagesmall: string | File | null;
+  setImageSmall: React.Dispatch<React.SetStateAction<File | null>>
+  handleFieldChange: (fieldName: string, value: unknown) => void
+  error1: string | undefined
+  error2: string | undefined
+  fieldKey1: string
+  fieldKey2: string
+  loading: boolean | null
+  topon: number
+}
+
+export interface BoxUploadCSVProps {
+  files: string | File | null;
+  setFiles: React.Dispatch<React.SetStateAction<File | null>>
+  handleFieldChange: (fieldName: string, value: unknown) => void
+  error: string | undefined
+  fieldKey: string
+  loading: boolean | null
+  topon: number
+}
 
 export interface BasicDatePickerProps {
   name: string;
@@ -100,14 +133,26 @@ export interface BasicDropDownSeleteProps {
   name: string;
   active?: string
 }
+export interface BasicDropDownSeletePDFProps {
+  id: number;
+  name: string;
+  type: string;
+  file: string;
+  active?: string
+}
+export interface MenuDropDownSeleteProps {
+  id: number;
+  valuename: string;
+  labelname: string
+}
 
 
 
 export interface PayloadType {
-    nameTH: string;
-    nameEN: string;
-    savename: string;
-    active: string;
+  nameTH: string;
+  nameEN: string;
+  savename: string;
+  active: string;
 }
 
 // -------------------------------------------------------------------
@@ -189,6 +234,45 @@ export interface FormBannerData {
   brandername: string;
   picturePC: string | File | null;
   pictureMoblie: string | File | null;
+}
+//Type Loan 
+export interface FormTypeLoanData {
+  name: string
+  typename: string| null;
+  fileDosc: string | File | null;
+}
+
+//Loan
+export interface FormLoanData {
+  name: string
+  routName: string
+  typeCar: string
+  minAmount: string
+  maxAmount: string
+  imagelarge: string | File | null;
+  imagesmall: string | File | null;
+  highlight: string
+  qualifications: string
+  documens: string
+  docDetail: string | null;
+  docInterest: string | null;
+}
+
+//branch
+export interface FormBranchData {
+  selectedBranchType: number | null;
+  branchname: string
+  selectedBusinessSector: number | null;
+  selectedRegion: number | null;
+  address: string;
+  district: string;
+  amphoe: string;
+  province: string;
+  zipcode: string;
+  landmark: string
+  phone: string
+  lat: string
+  lag: string
 }
 
 
@@ -292,8 +376,48 @@ export interface FormBannerDataErrors {
   [key: string]: string | undefined;
 }
 
+//Type Loan 
+export interface FormTypeLoanDataErrors {
+  name?: string
+  typename?: string
+  fileDosc?: string 
+   [key: string]: string | undefined;
+}
 
+//loan
+export interface FormLoanDataErrors {
+  name?: string
+  routName?: string
+  typeCar?: string
+  minAmout?: string
+  maxAmout?: string
+  imagelarge?: string
+  imagesmall?: string
+  highlight?: string
+  qualifications?: string
+  documens?: string
+  docDetail?: string
+  docInterest?: string
+  [key: string]: string | undefined;
+}
 
+//branch
+export interface FormBranchDataErrors {
+  selectedBranchType?: string;
+  branchname?: string
+  selectedBusinessSector?: string;
+  selectedRegion?: string
+  address?: string;
+  district?: string;
+  amphoe?: string;
+  province?: string;
+  zipcode?: string;
+  landmark?: string
+  phone?: string
+  lat?: string
+  lag?: string
+  [key: string]: string | undefined;
+}
 
 
 
@@ -398,34 +522,103 @@ export interface BannerData {
   bannerscount: number;
   bannder: BannerProps[]
 }
+
+// <--- Type Loan --->
+
+
+interface TypeloanProps {
+  id: number
+  title: string
+  filePDF: string
+  type: string
+  active: string
+  savename: string
+  createAt: string
+  updateAt: string
+}
+
+export interface TypeloanData {
+  counts: number
+  dos: TypeloanProps[]
+}
+
+// <--- Loan --->
+interface LoanProps {
+  id: number
+  nameTH: string
+  nameEN: string
+  imagelarge: string
+  imagesmall: string
+  highlight: string
+  qualifications: string
+  documens: string
+  vehicleType: string
+  dose: string
+  minamount: string
+  maxamount: string
+  active: string
+  isopen: string
+  savename: string
+  createAt: string
+  updateAt: string
+}
+
+export interface LoanData {
+  loanscount: number;
+  loan: LoanProps[]
+}
+
 // <--- Branch --->
 interface BranchProps {
-  id:string
-  region:number
-  area:string
-  type:number
-  name:string
-  address:string
-  districtid:string
-  districtname:string
-  amphurid:number
-  amphurname:string
-  provinceid:number
-  zipcode:string
-  detail:string
-  tel:string
-  lat:string
-  lng:string
-  status:string
-  savename:string
-  createAt:string
-  updateAt:string
+  id: string
+  region: number
+  area: string
+  type: number
+  name: string
+  address: string
+  districtid: string
+  districtname: string
+  amphurid: number
+  amphurname: string
+  provinceid: number
+  provincename: string
+  zipcode: string
+  detail: string
+  tel: string
+  lat: string
+  lng: string
+  status: string
+  savename: string
+  createAt: string
+  updateAt: string
 }
+
+
 export interface BranchData {
   counts: number;
   data: BranchProps[]
 }
 
+export interface PayloadBranch {
+  branchType: number | null
+  branchname: string
+  businessSector: number | null
+  region: number | null
+  address: string
+  districtID: number | null
+  district: string
+  amphoeID: number | null
+  amphoe: string
+  provinceID: number | null
+  province: string
+  zipcode: string
+  landmark: string
+  phone: string
+  lat: string
+  lag: string
+  savename: string
+  active: string
+}
 
 
 // <--- Topics --->

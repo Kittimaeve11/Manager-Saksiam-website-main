@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import type { FormTopicsData, FormTopicsDataErrors, PayloadType } from '../../../utils/types';
 import { validataTopicsForm } from '../../../utils/validation';
 import { apiFetch } from '../../../API/client';
-import TextButton from '../../Model/Buttom/TextButton';
+import TextButton from '../../Buttom/TextButton';
 import BasicTextField from '../../Model/TextField/BasicTextField';
 import ConfirmDialog from '../../Model/Pop_up/ConfirmDialog';
 

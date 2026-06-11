@@ -2,27 +2,28 @@ import { Box, Container, Fade, Grid, Paper, TableRow, Typography, useTheme } fro
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../Context/AuthContext';
-import TextButton from '../../components/Model/Buttom/TextButton';
 import ConfirmDialog from '../../components/Model/Pop_up/ConfirmDialog';
 import Notifications from '../../components/Model/Pop_up/Notifications';
 import { apiFetch } from '../../API/client';
 import { closestCenter, DndContext, type DragEndEvent } from '@dnd-kit/core';
-import { arrayMove, SortableContext } from '@dnd-kit/sortable';
+import { CSS } from "@dnd-kit/utilities";
+import { arrayMove, rectSortingStrategy, SortableContext, useSortable } from '@dnd-kit/sortable';
 import StyledTableCell from '../../components/Model/Table/StyledTableCell';
 import { FaExpandArrowsAlt } from 'react-icons/fa';
 import type { Column } from '../../utils/types';
 import ComponentTableModel from '../../components/Model/Table/ComponentTableModel';
+import TextButton from '../../components/Buttom/TextButton';
 
 
 const BASE_URL_API = import.meta.env.VITE_BASE_URL_API_PHOTO;
 
 interface DataBrandProps {
-    brander_ID: number
-    brander_name: string
-    brander_picturePC: string
-    brander_pictureMoblie: string
-    brander_order: string
-    brander_active: string
+    id: number
+    name: string
+    picturePC: string
+    pictureMoblie: string
+    order: string
+    active: string
 }
 
 
@@ -68,8 +69,8 @@ const Homesrankpage = () => {
         const { active, over } = event;
         if (!over || active.id === over.id) return;
 
-        const oldIndex = brandData.findIndex((item) => item.brander_ID === active.id)
-        const newIndex = brandData.findIndex((item) => item.brander_ID === over.id)
+        const oldIndex = brandData.findIndex((item) => item.id === active.id)
+        const newIndex = brandData.findIndex((item) => item.id === over.id)
         setBrandData(arrayMove(brandData, oldIndex, newIndex));
     }
 
@@ -81,9 +82,9 @@ const Homesrankpage = () => {
     const getOrderChanges = () => {
         const changes = brandData
             .map((item, index) => {
-                const oldIndex = originalBrandData.findIndex((orig) => orig.brander_ID === item.brander_ID);
+                const oldIndex = originalBrandData.findIndex((orig) => orig.id === item.id);
                 if (oldIndex !== index) {
-                    return `ID: ${item.brander_ID} (${oldIndex + 1} → ${index + 1})`;
+                    return `ID: ${item.id} (${oldIndex + 1} → ${index + 1})`;
                 }
                 return null;
             })
@@ -104,7 +105,7 @@ const Homesrankpage = () => {
 
         const orderData = {
             newOrder: brandData.map((item, index) => ({
-                int_saksolar_brander_ID: item.brander_ID,
+                int_saksolar_brander_ID: item.id,
                 int_saksolar_brander_order: index + 1,
             })),
         };
@@ -133,7 +134,7 @@ const Homesrankpage = () => {
                     const actionDetail = `จัดลำดับข้อมูลหน้าแบนเนอร์หน้าหลัก ${getOrderChanges()}`;
 
                     const payloadlog = {
-                        actionType: 12,
+                        actionType: 13,
                         actionDetail,
                         typeUser: user?.role_name,
                         datatype: "หน้าหลัก",
@@ -151,7 +152,7 @@ const Homesrankpage = () => {
                     navigate("/Banner", {
                         state: {
                             notify: {
-                                message: "เพิ่มข้อมูลแบนเนอร์สำเร็จ",
+                                message: "จัดลำดับข้อมูลหน้าแบนเนอร์หน้าหลักสำเร็จ",
                                 type: "success",
                             },
                         },
@@ -209,13 +210,13 @@ const Homesrankpage = () => {
                     <Typography variant="h6" component="label" sx={{ display: 'flex', alignItems: 'center', gap: 1, fontWeight: 600, mb: 2 }}>
                         เรียงลำดับแบนเนอร์หน้าหลัก
                     </Typography>
-                    <Box width='100%' sx={{ px: { xs: 2, sm: 5 } }}>
+                    <Box sx={{ px: { xs: 2, sm: 5 }, width: '100%' }}>
                         <Grid container spacing={2}>
                             <Grid size={{ xs: 12, md: 12 }} >
                                 <Box sx={{ width: '100%' }}>
                                     {loading ? (
-                                        <Box display="flex" justifyContent="center" alignItems="center">
-                                            <Typography variant="body1" color={theme.palette.grey[300]} fontWeight={300}>
+                                        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                            <Typography variant="body1" sx={{ color: theme.palette.grey[300], fontWeight: 300 }}>
                                                 ... กำลังโหลด ...
                                             </Typography>
                                         </Box>
@@ -223,9 +224,9 @@ const Homesrankpage = () => {
                                         <Box sx={{ overflowX: 'hidden', overflowY: 'auto', maxHeight: 500, position: 'relative' }}>
                                             <DndContext collisionDetection={closestCenter} onDragEnd={onDragEnd}>
                                                 <ComponentTableModel columns={columns} largest='sm'>
-                                                    <SortableContext items={brandData.map((item) => item.brander_ID)} strategy={rectSortingStrategy}>
+                                                    <SortableContext items={brandData.map((item) => item.id)} strategy={rectSortingStrategy}>
                                                         {brandData.map((product, index) => (
-                                                            <SortVediotableRow key={product.brander_ID} product={product} index={index} />
+                                                            <SortVediotableRow key={product.id} product={product} index={index} />
                                                         ))}
                                                     </SortableContext>
                                                 </ComponentTableModel>
@@ -249,15 +250,14 @@ const Homesrankpage = () => {
                                 mt: 7
                             }}
                         >
-
-                            {/* <TextButton
+                            <TextButton
 
                                 onClick={handleSaveOrder}
                                 sx={{ backgroundColor: theme.palette.secondary.main }}
 
                             >
                                 บันทึกการจัดลำดับ
-                            </TextButton> */}
+                            </TextButton>
                         </Box>
                     </Box>
                 </Box>
@@ -275,12 +275,12 @@ const Homesrankpage = () => {
 
 export default Homesrankpage
 const SortVediotableRow: React.FC<{ product: DataBrandProps; index: number }> = ({ product, index }) => {
-    const { attributes, listeners, setNodeRef, transform } = useSortable({ id: product.brander_ID });
+    const { attributes, listeners, setNodeRef, transform } = useSortable({ id: product.id });
     const theme = useTheme();
     return (
         <Fade in timeout={1000}>
             <TableRow
-                key={product.brander_ID}
+                key={product.id}
                 ref={setNodeRef}
                 {...attributes}
                 {...listeners}
@@ -294,7 +294,7 @@ const SortVediotableRow: React.FC<{ product: DataBrandProps; index: number }> = 
                         theme.palette.mode === 'dark'
                             ? `1px solid ${theme.palette.grey[700]}`
                             : '1px solid #F0F2F4',
-                    backgroundColor: product.brander_ID ? 'rgba(238, 244, 252, 0)' : 'inherit',
+                    backgroundColor: product.id ? 'rgba(238, 244, 252, 0)' : 'inherit',
                     transition: 'background-color 1s ease-in-out',
                     cursor: 'grab',
                     transform: CSS.Transform.toString(transform) || undefined,
@@ -321,13 +321,13 @@ const SortVediotableRow: React.FC<{ product: DataBrandProps; index: number }> = 
                         <Box
                             component="img"
                             loading="lazy"
-                            maxWidth={30}
-                            maxHeight={60}
-                            alt={product.brander_name}
-                            src={`${BASE_URL_API}/${product.brander_pictureMoblie}`}
+                            alt={product.name}
+                            src={`${BASE_URL_API}/${product.picturePC}`}
                             sx={{
                                 marginRight: 2,
-                                filter: product.brander_active === "0" ? 'grayscale(100%) brightness(70%) opacity(0.5)' : 'none',
+                                filter: product.active === "0" ? 'grayscale(100%) brightness(70%) opacity(0.5)' : 'none',
+                                maxWidth: 30,
+                                maxHeight: 60
                             }}
                         />
                     </Box>
@@ -335,11 +335,10 @@ const SortVediotableRow: React.FC<{ product: DataBrandProps; index: number }> = 
                 <StyledTableCell>
                     <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', mb: 0.5 }}>
                         <Typography variant='body2'
-                            fontWeight={400}
                             sx={{
-                                color: product.brander_active === "0" ? 'rgba(0, 0, 0, 0.5)' : 'text.primary',
+                                color: product.active === "0" ? 'rgba(0, 0, 0, 0.5)' : 'text.primary', fontWidth: 400
                             }}
-                        >   {product.brander_name} </Typography>
+                        >   {product.name} </Typography>
                     </Box>
                 </StyledTableCell>
                 <StyledTableCell align="left" >

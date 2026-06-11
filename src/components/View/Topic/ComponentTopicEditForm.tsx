@@ -4,7 +4,7 @@ import type { FormTopicsData, FormTopicsDataErrors } from '../../../utils/types'
 import { validataTopicsForm } from '../../../utils/validation';
 import { apiFetch } from '../../../API/client';
 import BasicTextField from '../../Model/TextField/BasicTextField';
-import TextButton from '../../Model/Buttom/TextButton';
+import TextButton from '../../Buttom/TextButton';
 import ConfirmDialog from '../../Model/Pop_up/ConfirmDialog';
 
 interface ComponentTopicsEditFormProps {

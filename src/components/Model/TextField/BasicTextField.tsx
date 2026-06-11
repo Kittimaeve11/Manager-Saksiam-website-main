@@ -30,16 +30,14 @@ const BasicTextField: React.FC<ComponentsTextModelProps> = ({
                     setsubject(e.target.value)
                     handleFieldChange(fieldKey, e.target.value)
                 }}
-                InputProps={{
-                    sx: {
-                        fontSize: theme.typography.body2.fontSize,
-                    },
-                }}
-                sx={{
+                 slotProps={{ 
+    htmlInput: { 
+      sx: {   fontSize: theme.typography.body2.fontSize, } 
+    } 
+  }}
+              
+                  sx={{
                     '& .MuiInputLabel-root': {
-                        color: theme.palette.primary.main
-                    },
-                    '& .MuiInputLabel-root.Mui-focused': {
                         color: theme.palette.primary.main
                     },
                     '& .MuiInputBase-input': {
@@ -50,16 +48,20 @@ const BasicTextField: React.FC<ComponentsTextModelProps> = ({
                         color: error ? theme.palette.error.main : theme.palette.grey[500],
                         opacity: 1
                     },
-                    mt:1
+
+                    '& .MuiInputLabel-root.Mui-focused': {
+                        color: theme.palette.primary.main
+                    },
+                    '& .MuiFormHelperText-root': {
+                        fontSize: theme.typography.caption.fontSize,
+                        fontWeight: 400,
+                    },
+                    
+                    fontSize: theme.typography.body2.fontSize,
+                    mt: 1
                 }}
                 error={Boolean(error)}
                 helperText={error}
-                FormHelperTextProps={{
-                    sx: {
-                        fontSize: theme.typography.caption.fontSize,
-                        fontWeight: 400
-                    }
-                }}
             />
         </Box>
     )

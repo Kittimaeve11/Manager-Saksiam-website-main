@@ -141,7 +141,7 @@ const BoxUploadProfile: React.FC<BoxUploadProfileProps> = ({
                     <Skeleton variant="rounded" width='auto' height='300px' />
                 </Stack>
             ) : profile === null ? (
-                <Stack spacing={3} alignItems="center">
+                <Stack spacing={3} sx={{alignItems:'center'}} >
                     <Box sx={{
                         width: 130,
                         height: 130,
@@ -195,7 +195,7 @@ const BoxUploadProfile: React.FC<BoxUploadProfileProps> = ({
                             }}
                         >
                             <Person3Icon fontSize="medium" sx={{ color: error ? theme.palette.error.main : theme.palette.common.white }} />
-                            <Typography variant="caption" fontWeight={400} sx={{ mt: 1, color: error ? theme.palette.error.main : 'inherit' }}>
+                            <Typography variant="caption" sx={{ mt: 1, color: error ? theme.palette.error.main : 'inherit',fontWeight:400 }}>
                                 อัปโหลดรูป
                             </Typography>
                         </Box>

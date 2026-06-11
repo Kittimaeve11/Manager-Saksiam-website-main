@@ -28,6 +28,9 @@ const ButtonMenu: React.FC<ButtonMenuProps> = ({
 }) => {
     const theme = useTheme();
     const navigate = useNavigate();
+    const selectedPath = selectedsetLink.trim();
+    const isSelected = selectedLink === selectedPath || selectedLink.startsWith(`${selectedPath}/`);
+
     return (
         <Box>
             <ListItemButton
@@ -44,8 +47,8 @@ const ButtonMenu: React.FC<ButtonMenuProps> = ({
                         backgroundColor: theme.palette.action.hover,
                     },
                     '&.Mui-selected': {
-                        backgroundColor: theme.palette.mode === 'dark' ? (selectedLink === selectedsetLink ? '#1c2439' : '')
-                            : (selectedLink === selectedsetLink ? theme.palette.primary.lighter : ''),
+                        backgroundColor: theme.palette.mode === 'dark' ? (isSelected ? '#1c2439' : '')
+                            : (isSelected ? theme.palette.primary.lighter : ''),
                         ':hover': {
                             backgroundColor: theme.palette.mode === 'dark' ? '#192a55' : '#c1c6d9',
 
@@ -53,11 +56,11 @@ const ButtonMenu: React.FC<ButtonMenuProps> = ({
                     },
                 }}
                 onClick={() => {
-                    setSelectedLink(selectedsetLink);
-                    navigate(selectedsetLink);
+                    setSelectedLink(selectedPath);
+                    navigate(selectedPath);
                     if (isMobile) setOpen(false);
                 }}
-                selected={selectedLink === selectedsetLink}
+                selected={isSelected}
             >
                 <ListItemIcon
                     sx={{
@@ -66,7 +69,7 @@ const ButtonMenu: React.FC<ButtonMenuProps> = ({
                         justifyContent: 'center',
                         fontSize: theme.typography.h4.fontSize,
                 
-                        color: theme.palette.mode === 'dark' ? (selectedLink === selectedsetLink ? theme.palette.common.white  : theme.palette.grey[600]) : (selectedLink === selectedsetLink ? theme.palette.primary.dark : '')
+                        color: theme.palette.mode === 'dark' ? theme.palette.common.white : (isSelected ? theme.palette.primary.dark : '')
                     }}
                 >
                     {showBadge && badge ? (
@@ -87,7 +90,7 @@ const ButtonMenu: React.FC<ButtonMenuProps> = ({
                         <Typography
                             sx={{
                                 fontSize: open ? theme.typography.body2.fontSize : 8,
-                                color: theme.palette.mode === 'dark' ? (selectedLink === selectedsetLink ? theme.palette.common.white : theme.palette.grey[500]) : (selectedLink === selectedsetLink ? theme.palette.primary.dark : ''),
+                                color: theme.palette.mode === 'dark' ? theme.palette.common.white : (isSelected ? theme.palette.primary.dark : ''),
                                         fontWeight: 600,
 
                             }}
@@ -97,7 +100,7 @@ const ButtonMenu: React.FC<ButtonMenuProps> = ({
                     }
                     sx={{
                         opacity: 1,
-                        color: selectedLink === selectedsetLink ? theme.palette.primary.dark : ""
+                        color: isSelected ? theme.palette.primary.dark : ""
                     }}
                 />
                 {open && showBadge && badge}

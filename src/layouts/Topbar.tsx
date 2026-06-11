@@ -5,7 +5,7 @@ export default function Topbar() {
     <Box
       sx={{
         height: 70,
-        bgcolor: "#3f5170",
+        bgcolor: "#3f703f",
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
